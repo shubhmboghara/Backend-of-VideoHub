@@ -177,24 +177,36 @@ const updateComment = asyncHandler(async (req, res) => {
 const deleteComment = asyncHandler(async (req, res) => {
 
     const { commentid } = req.params;
-    console.log("Comment ID Params:", req.params);
+    console.log("Delete Comment Request - Comment ID:", commentid);
+    console.log("User ID from Request:", req.user?._id);
 
     if (!mongoose.Types.ObjectId.isValid(commentid)) {
+        console.error("Invalid comment ID provided:", commentid);
         throw new ApiError(400, "Invalid comment id ")
     }
 
-    const comment = await Comment.findById(commentid)
+    const comment = await Comment.findById(commentid);
 
     if (!comment) {
-        throw new ApiError(404, " comment not found ")
+        console.error("Comment not found for ID:", commentid);
+        throw new ApiError(404, "Comment not found");
     }
 
+    console.log("Found comment. Owner ID:", comment.owner.toString());
+    console.log("Requesting user ID:", req.user._id.toString());
 
     if (comment.owner.toString() !== req.user._id.toString()) {
+        console.error("Unauthorized attempt to delete comment. Comment owner:", comment.owner.toString(), "Requesting user:", req.user._id.toString());
         throw new ApiError(403, "You are not allowed to delete this comment");
     }
 
-    await comment.deleteOne()
+    try {
+        await comment.deleteOne();
+        console.log("Comment deleted successfully. Comment ID:", commentid);
+    } catch (error) {
+        console.error("Error deleting comment:", error);
+        throw new ApiError(500, "Failed to delete comment due to a server error");
+    }
 
     return res
         .status(200)
