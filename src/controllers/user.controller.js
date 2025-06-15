@@ -67,15 +67,18 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 
     if (!user) {
-        throw new ApiError(500, "Failed to register user");
+        throw new ApiError(500, "Failed to register user")
     }
 
-    const tokens = await generateAccessAndRefreshTokens(user._id);
-    const createdUser = await User.findById(user._id).select("-password -refreshToken");
+    const tokens = await generateAccessAndRefreshTokens(user._id)
+    const createdUser = await User.findById(user._id).select("-password -refreshToken")
+    const isProd = process.env.NODE_ENV === "production"
+
 
     const options = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production"
+        secure: process.env.COOKIE_SECURE === "true" || isProd,
+        sameSite: process.env.COOKIE_SAMESITE || (isProd ? "None" : "Lax")
     };
 
     return res
@@ -108,10 +111,14 @@ const loginUser = asyncHandler(async (req, res) => {
     const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
+    const isProd = process.env.NODE_ENV === "production"
+
+
     const options = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production"
-    };
+        secure: process.env.COOKIE_SECURE === "true" || isProd,
+        sameSite: process.env.COOKIE_SAMESITE || (isProd ? "None" : "Lax")
+    }
 
     return res
         .status(200)
@@ -129,7 +136,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production"
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax'
     };
 
     return res
@@ -161,10 +169,14 @@ const refreshAccesToken = asyncHandler(async (req, res) => {
             throw new ApiError(401, "Refresh token expired or used");
         }
 
-        const options = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production"
-        };
+      const isProd = process.env.NODE_ENV === "production"
+
+
+    const options = {
+        httpOnly: true,
+        secure: process.env.COOKIE_SECURE === "true" || isProd,
+        sameSite: process.env.COOKIE_SAMESITE || (isProd ? "None" : "Lax")
+    }
 
         const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
 
