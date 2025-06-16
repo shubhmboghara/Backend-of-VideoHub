@@ -1,6 +1,6 @@
 # VideoHub Backend API
 
-**Live Project Link**: [VideoHub Frontend](https://videohub-official.netlify.app/)
+**Live Project Link**: (https://videohub-official.netlify.app/)
 
 ## Table of Contents
 
