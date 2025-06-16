@@ -39,7 +39,7 @@ export const optionalVerifyJwt = asyncHandler(async (req, _, next) => {
     return next()
   }
   const token = raw.startsWith("Bearer") ? raw.replace("Bearer ", "").trim() : raw.trim()
-  let decoded
+  let decoded 
   try {
     decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
   } catch {
