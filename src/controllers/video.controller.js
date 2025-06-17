@@ -21,7 +21,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         sortType = "desc",
         userId,
         page = 1,
-        limit = 10,
+        limit = 50,
         minViews,
         maxViews,
         minDuration,
