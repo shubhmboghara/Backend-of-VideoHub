@@ -20,8 +20,6 @@ const getAllVideos = asyncHandler(async (req, res) => {
         sortBy = ["views", "createdAt"],
         sortType = "desc",
         userId,
-        page = 1,
-        limit = 50,
         minViews,
         maxViews,
         minDuration,
@@ -30,7 +28,6 @@ const getAllVideos = asyncHandler(async (req, res) => {
         toDate,
     } = req.query;
 
-    const skip = (page - 1) * limit;
     const matchStage = { isPublished: true };
     const sortDir = sortType === "asc" ? 1 : -1;
 
@@ -112,8 +109,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
             },
         },
         { $sort: sortStage },
-        { $skip: skip },
-        { $limit: parseInt(limit, 10) },
+
     ];
 
     const videos = await Video.aggregate(pipeline);
