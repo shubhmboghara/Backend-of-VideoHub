@@ -21,7 +21,7 @@ router.route("/user").get(getUserPlaylists);
 router
     .route("/:playlistId")
     .get(getPlaylistById)
-    .patch(updatePlaylist)
+    .patch(updatePlaylist)      
     .delete(deletePlaylist);
 
 router.route("/add/:videoId/:playlistId").patch(addVideoToPlaylist);
